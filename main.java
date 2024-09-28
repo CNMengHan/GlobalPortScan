@@ -5,6 +5,9 @@ import java.util.Random;
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.awt.Desktop;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class main {
 
@@ -66,8 +69,23 @@ public class main {
 
     private static void check(String ip) {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(InetAddress.getByName(ip), 25565), 1000);
-            System.out.println(" " + ip + ":25565 open ");
+            socket.connect(new InetSocketAddress(InetAddress.getByName(ip), 80), 1000);
+            System.out.println(" http://" + ip + ":80");
+            try {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                        URI uri = new URI("http://" + ip + ":80");
+                        desktop.browse(uri);
+                    }
+                }
+            } catch (URISyntaxException e) {
+                System.out.println("URI格式错误");
+                e.printStackTrace();
+            } catch (Exception e) {
+                System.out.println("无法打开浏览器");
+                e.printStackTrace();
+            }
         } catch (Exception e) {
         }
     }
